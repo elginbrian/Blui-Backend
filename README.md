@@ -112,6 +112,15 @@ docker-compose logs -f app
 docker-compose logs -f db
 ```
 
+### File Uploads
+
+Aplikasi mendukung upload foto profil yang disimpan dalam Docker volume:
+
+- **Lokasi penyimpanan**: `/app/uploads/{user_id}/`
+- **URL akses**: `http://localhost:8000/uploads/{user_id}/{filename}`
+- **Format yang didukung**: JPG, JPEG, PNG, GIF
+- **Volume Docker**: `uploads_data` untuk persistensi data
+
 ## 📁 Project Structure
 
 ```
@@ -124,7 +133,8 @@ Blui-Backend/
 │   │           ├── auth.py
 │   │           ├── categories.py
 │   │           ├── transactions.py
-│   │           └── summary.py
+│   │           ├── summary.py
+│   │           └── user.py
 │   ├── core/
 │   │   ├── config.py               # App configuration
 │   │   ├── database.py             # Database connection
@@ -144,6 +154,7 @@ Blui-Backend/
 ├── Dockerfile                    # Docker image configuration
 ├── docker-compose.yml           # Docker Compose setup
 ├── .dockerignore               # Docker ignore file
+├── uploads/                    # Uploaded files directory (created by Docker)
 └── README.md
 ```
 
@@ -188,9 +199,12 @@ Authorization: Bearer <your-jwt-token>
 
 - `POST /api/v1/auth/register` - Register user baru
 - `POST /api/v1/auth/login` - Login user
-- `GET /api/v1/auth/profile` - Get user profile
-- `PUT /api/v1/auth/profile` - Update user profile
-- `POST /api/v1/auth/photo` - Upload profile photo
+
+### User Profile
+
+- `GET /api/v1/user/profile` - Get user profile
+- `PUT /api/v1/user/profile` - Update user profile
+- `POST /api/v1/user/photo` - Upload profile photo
 
 ### Categories
 

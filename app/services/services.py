@@ -70,6 +70,38 @@ class AuthService:
         db.refresh(user)
         return user
 
+    @staticmethod
+    def update_user_photo(db: Session, user_id: str, photo_content: bytes, filename: str) -> User:
+        """Update user profile photo"""
+        import os
+        from pathlib import Path
+
+        user = db.query(User).filter(User.id == user_id).first()
+        if not user:
+            raise ValueError("User not found")
+
+        uploads_dir = Path("/app/uploads")
+        user_dir = uploads_dir / user_id
+        user_dir.mkdir(parents=True, exist_ok=True)
+
+        file_extension = Path(filename).suffix.lower()
+        if file_extension not in ['.jpg', '.jpeg', '.png', '.gif']:
+            file_extension = '.jpg'  # default to jpg
+
+        unique_filename = f"profile_{user_id}{file_extension}"
+        file_path = user_dir / unique_filename
+
+        with open(file_path, "wb") as f:
+            f.write(photo_content)
+
+        photo_url = f"/uploads/{user_id}/{unique_filename}"
+
+        user.photo_url = photo_url
+        user.updated_at = datetime.utcnow()
+        db.commit()
+        db.refresh(user)
+        return user
+
 
 class CategoryService:
     """Category service"""
