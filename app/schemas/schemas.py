@@ -52,6 +52,19 @@ class TokenData(BaseModel):
     user_id: Optional[str] = None
 
 
+class UserResponse(BaseModel):
+    id: str
+    fullName: str
+    email: str
+    dateOfBirth: Optional[str] = None
+    photoUrl: Optional[str] = None
+
+
+class AuthResponse(BaseModel):
+    token: str
+    user: UserResponse
+
+
 # Category schemas
 class CategoryBase(BaseModel):
     name: str = Field(..., min_length=1, max_length=50)
