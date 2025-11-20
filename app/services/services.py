@@ -331,7 +331,7 @@ class SummaryService:
         )
 
         return BalanceSummaryResponse(
-            user_id=user_id,
+            user_id=str(user_id),
             month=month,
             year=year,
             balance=balance,
@@ -370,7 +370,7 @@ class SummaryService:
             category = cat_data['category']
             if category:
                 result.append(CategorySummary(
-                    category_id=category.id,
+                    category_id=str(category.id),
                     category_name=category.name,
                     category_icon=category.icon,
                     category_color=category.color,
