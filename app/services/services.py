@@ -3,7 +3,7 @@ Business logic services
 """
 import uuid
 from datetime import datetime
-from typing import List, Optional
+from typing import List, Optional, Union
 
 from sqlalchemy.orm import Session
 
@@ -55,7 +55,7 @@ class AuthService:
         return user
 
     @staticmethod
-    def update_user(db: Session, user_id: str, user_data: UserUpdate) -> User:
+    def update_user(db: Session, user_id: Union[str, uuid.UUID], user_data: UserUpdate) -> User:
         """Update user profile"""
         user = db.query(User).filter(User.id == user_id).first()
         if not user:
@@ -71,7 +71,7 @@ class AuthService:
         return user
 
     @staticmethod
-    def update_user_photo(db: Session, user_id: str, photo_content: bytes, filename: str) -> User:
+    def update_user_photo(db: Session, user_id: Union[str, uuid.UUID], photo_content: bytes, filename: str) -> User:
         """Update user profile photo"""
         import os
         from pathlib import Path
@@ -81,20 +81,20 @@ class AuthService:
             raise ValueError("User not found")
 
         uploads_dir = Path("/app/uploads")
-        user_dir = uploads_dir / user_id
+        user_dir = uploads_dir / str(user_id)
         user_dir.mkdir(parents=True, exist_ok=True)
 
         file_extension = Path(filename).suffix.lower()
         if file_extension not in ['.jpg', '.jpeg', '.png', '.gif']:
             file_extension = '.jpg'  # default to jpg
 
-        unique_filename = f"profile_{user_id}{file_extension}"
+        unique_filename = f"profile_{str(user_id)}{file_extension}"
         file_path = user_dir / unique_filename
 
         with open(file_path, "wb") as f:
             f.write(photo_content)
 
-        photo_url = f"/uploads/{user_id}/{unique_filename}"
+        photo_url = f"/uploads/{str(user_id)}/{unique_filename}"
 
         user.photo_url = photo_url
         user.updated_at = datetime.utcnow()
@@ -107,12 +107,12 @@ class CategoryService:
     """Category service"""
 
     @staticmethod
-    def get_user_categories(db: Session, user_id: str) -> List[Category]:
+    def get_user_categories(db: Session, user_id: Union[str, uuid.UUID]) -> List[Category]:
         """Get all categories for a user"""
         return db.query(Category).filter(Category.user_id == user_id).all()
 
     @staticmethod
-    def create_category(db: Session, user_id: str, category_data: CategoryCreate) -> Category:
+    def create_category(db: Session, user_id: Union[str, uuid.UUID], category_data: CategoryCreate) -> Category:
         """Create a new category"""
         category_id = str(uuid.uuid4())
         category = Category(
@@ -129,7 +129,7 @@ class CategoryService:
         return category
 
     @staticmethod
-    def delete_category(db: Session, user_id: str, category_id: str) -> bool:
+    def delete_category(db: Session, user_id: Union[str, uuid.UUID], category_id: Union[str, uuid.UUID]) -> bool:
         """Delete a category"""
         category = db.query(Category).filter(
             Category.id == category_id,
@@ -150,7 +150,7 @@ class TransactionService:
     @staticmethod
     def get_user_transactions(
         db: Session,
-        user_id: str,
+        user_id: Union[str, uuid.UUID],
         month: Optional[int] = None,
         year: Optional[int] = None,
         date: Optional[str] = None,
@@ -178,7 +178,7 @@ class TransactionService:
     @staticmethod
     def get_grouped_transactions(
         db: Session,
-        user_id: str,
+        user_id: Union[str, uuid.UUID],
         month: Optional[int] = None,
         year: Optional[int] = None,
         start_date: Optional[str] = None,
@@ -215,7 +215,7 @@ class TransactionService:
         return result
 
     @staticmethod
-    def get_transaction_by_id(db: Session, user_id: str, transaction_id: str) -> Optional[Transaction]:
+    def get_transaction_by_id(db: Session, user_id: Union[str, uuid.UUID], transaction_id: Union[str, uuid.UUID]) -> Optional[Transaction]:
         """Get a single transaction by ID"""
         return db.query(Transaction).filter(
             Transaction.id == transaction_id,
@@ -223,7 +223,7 @@ class TransactionService:
         ).first()
 
     @staticmethod
-    def create_transaction(db: Session, user_id: str, transaction_data: TransactionCreate) -> Transaction:
+    def create_transaction(db: Session, user_id: Union[str, uuid.UUID], transaction_data: TransactionCreate) -> Transaction:
         """Create a new transaction"""
         # Verify category belongs to user
         category = db.query(Category).filter(
@@ -254,8 +254,8 @@ class TransactionService:
     @staticmethod
     def update_transaction(
         db: Session,
-        user_id: str,
-        transaction_id: str,
+        user_id: Union[str, uuid.UUID],
+        transaction_id: Union[str, uuid.UUID],
         transaction_data: TransactionUpdate
     ) -> Optional[Transaction]:
         """Update a transaction"""
@@ -286,7 +286,7 @@ class TransactionService:
         return transaction
 
     @staticmethod
-    def delete_transaction(db: Session, user_id: str, transaction_id: str) -> bool:
+    def delete_transaction(db: Session, user_id: Union[str, uuid.UUID], transaction_id: Union[str, uuid.UUID]) -> bool:
         """Delete a transaction"""
         transaction = db.query(Transaction).filter(
             Transaction.id == transaction_id,
@@ -307,7 +307,7 @@ class SummaryService:
     @staticmethod
     def get_monthly_summary(
         db: Session,
-        user_id: str,
+        user_id: Union[str, uuid.UUID],
         month: int,
         year: int
     ) -> BalanceSummaryResponse:
