@@ -51,7 +51,7 @@ def upgrade() -> None:
         sa.Column('amount', sa.Float(), nullable=False),
         sa.Column('name', sa.String(), nullable=False),
         sa.Column('type', sa.Enum('income', 'expense', name='transaction_type'), nullable=False),
-        sa.Column('date', sa.Date(), nullable=False),
+        sa.Column('date', sa.String(), nullable=False),
         sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
         sa.Column('updated_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False)
     )
