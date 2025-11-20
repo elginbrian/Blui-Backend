@@ -50,9 +50,10 @@ class Transaction(Base):
     user_id = Column(String, ForeignKey("users.id"), nullable=False)
     category_id = Column(String, ForeignKey("categories.id"), nullable=False)
     type = Column(String, nullable=False)
-    description = Column(String, nullable=False)
+    name = Column(String, nullable=False)
     amount = Column(Float, nullable=False)
     date = Column(String, nullable=False)
+    note = Column(Text, nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 

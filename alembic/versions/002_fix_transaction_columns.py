@@ -19,8 +19,6 @@ depends_on = None
 
 
 def upgrade() -> None:
-    # Rename description to name
-    op.alter_column('transactions', 'description', new_column_name='name')
     # Add note column
     op.add_column('transactions', sa.Column('note', sa.Text(), nullable=True))
 
@@ -28,5 +26,3 @@ def upgrade() -> None:
 def downgrade() -> None:
     # Remove note column
     op.drop_column('transactions', 'note')
-    # Rename name back to description
-    op.alter_column('transactions', 'name', new_column_name='description')

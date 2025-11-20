@@ -49,7 +49,7 @@ def upgrade() -> None:
         sa.Column('user_id', UUID(as_uuid=True), sa.ForeignKey('users.id', ondelete='CASCADE'), nullable=False),
         sa.Column('category_id', UUID(as_uuid=True), sa.ForeignKey('categories.id', ondelete='SET NULL'), nullable=True),
         sa.Column('amount', sa.Float(), nullable=False),
-        sa.Column('description', sa.String(), nullable=False),
+        sa.Column('name', sa.String(), nullable=False),
         sa.Column('type', sa.Enum('income', 'expense', name='transaction_type'), nullable=False),
         sa.Column('date', sa.Date(), nullable=False),
         sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
