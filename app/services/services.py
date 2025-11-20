@@ -215,6 +215,14 @@ class TransactionService:
         return result
 
     @staticmethod
+    def get_transaction_by_id(db: Session, user_id: str, transaction_id: str) -> Optional[Transaction]:
+        """Get a single transaction by ID"""
+        return db.query(Transaction).filter(
+            Transaction.id == transaction_id,
+            Transaction.user_id == user_id
+        ).first()
+
+    @staticmethod
     def create_transaction(db: Session, user_id: str, transaction_data: TransactionCreate) -> Transaction:
         """Create a new transaction"""
         # Verify category belongs to user

@@ -54,6 +54,24 @@ async def get_grouped_transactions(
     return GroupedTransactionsResponse(groups=grouped_transactions)
 
 
+@router.get("/transactions/{transaction_id}", response_model=Transaction)
+async def get_transaction(
+    transaction_id: str,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+) -> Any:
+    """
+    Get a single transaction by ID
+    """
+    transaction = TransactionService.get_transaction_by_id(db, current_user.id, transaction_id)
+    if not transaction:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Transaction not found"
+        )
+    return transaction
+
+
 @router.post("/transactions", response_model=Transaction)
 async def create_transaction(
     transaction_data: TransactionCreate,
