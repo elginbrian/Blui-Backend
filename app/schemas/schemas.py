@@ -8,10 +8,14 @@ from pydantic import BaseModel, EmailStr, Field
 
 # User schemas
 class UserBase(BaseModel):
-    full_name: str = Field(..., min_length=1, max_length=100)
+    full_name: str = Field(..., min_length=1, max_length=100, alias="fullName")
     email: EmailStr
-    date_of_birth: Optional[str] = None
-    photo_url: Optional[str] = None
+    date_of_birth: Optional[str] = Field(None, alias="dateOfBirth")
+    photo_url: Optional[str] = Field(None, alias="photoUrl")
+
+    class Config:
+        from_attributes = True
+        populate_by_name = True
 
 
 class UserCreate(UserBase):
@@ -19,9 +23,12 @@ class UserCreate(UserBase):
 
 
 class UserUpdate(BaseModel):
-    full_name: Optional[str] = Field(None, min_length=1, max_length=100)
-    date_of_birth: Optional[str] = None
-    photo_url: Optional[str] = None
+    full_name: Optional[str] = Field(None, min_length=1, max_length=100, alias="fullName")
+    date_of_birth: Optional[str] = Field(None, alias="dateOfBirth")
+    photo_url: Optional[str] = Field(None, alias="photoUrl")
+
+    class Config:
+        populate_by_name = True
 
 
 class UserInDBBase(UserBase):
@@ -32,6 +39,7 @@ class UserInDBBase(UserBase):
 
     class Config:
         from_attributes = True
+        populate_by_name = True
 
 
 class User(UserInDBBase):
@@ -43,6 +51,11 @@ class UserInDB(UserInDBBase):
 
 
 # Auth schemas
+class LoginRequest(BaseModel):
+    email: EmailStr
+    password: str
+
+
 class Token(BaseModel):
     access_token: str
     token_type: str = "bearer"
@@ -54,10 +67,14 @@ class TokenData(BaseModel):
 
 class UserResponse(BaseModel):
     id: str
-    fullName: str
+    full_name: str = Field(..., alias="fullName")
     email: str
-    dateOfBirth: Optional[str] = None
-    photoUrl: Optional[str] = None
+    date_of_birth: Optional[str] = Field(None, alias="dateOfBirth")
+    photo_url: Optional[str] = Field(None, alias="photoUrl")
+
+    class Config:
+        from_attributes = True
+        populate_by_name = True
 
 
 class AuthResponse(BaseModel):
@@ -78,12 +95,13 @@ class CategoryCreate(CategoryBase):
 
 class Category(CategoryBase):
     id: str
-    user_id: str
+    user_id: str = Field(..., alias="userId")
     created_at: datetime
     updated_at: datetime
 
     class Config:
         from_attributes = True
+        populate_by_name = True
 
 
 class CategoriesListResponse(BaseModel):
@@ -94,10 +112,13 @@ class CategoriesListResponse(BaseModel):
 class TransactionBase(BaseModel):
     type: str = Field(..., pattern="^(income|expense)$")
     name: str = Field(..., min_length=1, max_length=100)
-    category_id: str
+    category_id: str = Field(..., alias="categoryId")
     amount: float = Field(..., gt=0)
     date: str = Field(..., pattern=r"^\d{4}-\d{2}-\d{2}$")  # YYYY-MM-DD format
     note: Optional[str] = None
+
+    class Config:
+        populate_by_name = True
 
 
 class TransactionCreate(TransactionBase):
@@ -106,21 +127,25 @@ class TransactionCreate(TransactionBase):
 
 class TransactionUpdate(BaseModel):
     name: Optional[str] = Field(None, min_length=1, max_length=100)
-    category_id: Optional[str] = None
+    category_id: Optional[str] = Field(None, alias="categoryId")
     amount: Optional[float] = Field(None, gt=0)
     date: Optional[str] = Field(None, pattern=r"^\d{4}-\d{2}-\d{2}$")
     note: Optional[str] = None
 
+    class Config:
+        populate_by_name = True
+
 
 class Transaction(TransactionBase):
     id: str
-    user_id: str
+    user_id: str = Field(..., alias="userId")
     category: Optional[Category] = None
     created_at: datetime
     updated_at: datetime
 
     class Config:
         from_attributes = True
+        populate_by_name = True
 
 
 class TransactionsListResponse(BaseModel):
@@ -129,23 +154,29 @@ class TransactionsListResponse(BaseModel):
 
 # Summary schemas
 class CategorySummary(BaseModel):
-    category_id: str
-    category_name: str
-    category_icon: str
-    category_color: str
+    category_id: str = Field(..., alias="categoryId")
+    category_name: str = Field(..., alias="categoryName")
+    category_icon: str = Field(..., alias="categoryIcon")
+    category_color: str = Field(..., alias="categoryColor")
     total: float
     percentage: float
 
+    class Config:
+        populate_by_name = True
+
 
 class BalanceSummaryResponse(BaseModel):
-    user_id: str
+    user_id: str = Field(..., alias="userId")
     month: int = Field(..., ge=1, le=12)
     year: int = Field(..., ge=2000, le=2100)
     balance: float
-    total_income: float
-    total_expense: float
-    income_by_category: Optional[List[CategorySummary]] = None
-    expense_by_category: Optional[List[CategorySummary]] = None
+    total_income: float = Field(..., alias="totalIncome")
+    total_expense: float = Field(..., alias="totalExpense")
+    income_by_category: Optional[List[CategorySummary]] = Field(None, alias="incomeByCategory")
+    expense_by_category: Optional[List[CategorySummary]] = Field(None, alias="expenseByCategory")
+
+    class Config:
+        populate_by_name = True
 
 
 class MonthlySummaryListResponse(BaseModel):
@@ -156,8 +187,11 @@ class MonthlySummaryListResponse(BaseModel):
 class TransactionsByDateResponse(BaseModel):
     date: str
     transactions: List[Transaction]
-    total_income: float
-    total_expense: float
+    total_income: float = Field(..., alias="totalIncome")
+    total_expense: float = Field(..., alias="totalExpense")
+
+    class Config:
+        populate_by_name = True
 
 
 class GroupedTransactionsResponse(BaseModel):
