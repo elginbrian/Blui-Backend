@@ -2,7 +2,8 @@
 Pydantic schemas for API request/response validation
 """
 from datetime import datetime
-from typing import Optional, List
+from typing import Optional, List, Union
+from uuid import UUID
 from uuid import UUID
 from pydantic import BaseModel, EmailStr, Field, field_serializer
 
@@ -67,7 +68,7 @@ class TokenData(BaseModel):
 
 
 class UserResponse(BaseModel):
-    id: str
+    id: Union[str, UUID]
     full_name: str = Field(..., alias="fullName")
     email: str
     date_of_birth: Optional[str] = Field(None, alias="dateOfBirth")
@@ -101,8 +102,8 @@ class CategoryCreate(CategoryBase):
 
 
 class Category(CategoryBase):
-    id: str
-    user_id: str = Field(..., alias="userId")
+    id: Union[str, UUID]
+    user_id: Union[str, UUID] = Field(..., alias="userId")
     created_at: datetime
     updated_at: datetime
 
@@ -150,8 +151,8 @@ class TransactionUpdate(BaseModel):
 
 
 class Transaction(TransactionBase):
-    id: str
-    user_id: str = Field(..., alias="userId")
+    id: Union[str, UUID]
+    user_id: Union[str, UUID] = Field(..., alias="userId")
     category: Optional[Category] = None
     created_at: datetime
     updated_at: datetime
@@ -173,7 +174,7 @@ class TransactionsListResponse(BaseModel):
 
 # Summary schemas
 class CategorySummary(BaseModel):
-    category_id: str = Field(..., alias="categoryId")
+    category_id: Union[str, UUID] = Field(..., alias="categoryId")
     category_name: str = Field(..., alias="categoryName")
     category_icon: str = Field(..., alias="categoryIcon")
     category_color: str = Field(..., alias="categoryColor")
@@ -191,7 +192,7 @@ class CategorySummary(BaseModel):
 
 
 class BalanceSummaryResponse(BaseModel):
-    user_id: str = Field(..., alias="userId")
+    user_id: Union[str, UUID] = Field(..., alias="userId")
     month: int = Field(..., ge=1, le=12)
     year: int = Field(..., ge=2000, le=2100)
     balance: float
