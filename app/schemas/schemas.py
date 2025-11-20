@@ -153,11 +153,12 @@ class TransactionUpdate(BaseModel):
 class Transaction(TransactionBase):
     id: Union[str, UUID]
     user_id: Union[str, UUID] = Field(..., alias="userId")
+    category_id: Union[str, UUID] = Field(..., alias="categoryId")
     category: Optional[Category] = None
     created_at: datetime
     updated_at: datetime
 
-    @field_serializer('id', 'user_id')
+    @field_serializer('id', 'user_id', 'category_id')
     def serialize_uuid(self, value):
         if isinstance(value, UUID):
             return str(value)
