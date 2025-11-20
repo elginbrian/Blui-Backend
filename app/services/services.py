@@ -8,6 +8,7 @@ from typing import List, Optional, Union
 from sqlalchemy.orm import Session
 
 from app.core.security import get_password_hash, verify_password, create_access_token
+from app.core.config import settings
 from app.models.models import User, Category, Transaction
 from app.schemas.schemas import (
     UserCreate, UserUpdate, CategoryCreate, TransactionCreate, TransactionUpdate,
@@ -94,7 +95,7 @@ class AuthService:
         with open(file_path, "wb") as f:
             f.write(photo_content)
 
-        photo_url = f"/uploads/{str(user_id)}/{unique_filename}"
+        photo_url = f"{settings.PHOTO_BASE_URL}/uploads/{str(user_id)}/{unique_filename}"
 
         user.photo_url = photo_url
         user.updated_at = datetime.utcnow()

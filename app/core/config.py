@@ -21,6 +21,7 @@ class Settings(BaseSettings):
     # Server
     SERVER_NAME: str = "Blui API"
     SERVER_HOST: AnyHttpUrl = "http://localhost"
+    PHOTO_BASE_URL: str = "https://blui.elginbrian.com"
     DEBUG: bool = True
 
     # App Info
