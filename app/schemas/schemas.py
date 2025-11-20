@@ -3,7 +3,8 @@ Pydantic schemas for API request/response validation
 """
 from datetime import datetime
 from typing import Optional, List
-from pydantic import BaseModel, EmailStr, Field
+from uuid import UUID
+from pydantic import BaseModel, EmailStr, Field, field_serializer
 
 
 # User schemas
@@ -72,6 +73,12 @@ class UserResponse(BaseModel):
     date_of_birth: Optional[str] = Field(None, alias="dateOfBirth")
     photo_url: Optional[str] = Field(None, alias="photoUrl")
 
+    @field_serializer('id')
+    def serialize_uuid(self, value):
+        if isinstance(value, UUID):
+            return str(value)
+        return value
+
     class Config:
         from_attributes = True
         populate_by_name = True
@@ -98,6 +105,12 @@ class Category(CategoryBase):
     user_id: str = Field(..., alias="userId")
     created_at: datetime
     updated_at: datetime
+
+    @field_serializer('id', 'user_id')
+    def serialize_uuid(self, value):
+        if isinstance(value, UUID):
+            return str(value)
+        return value
 
     class Config:
         from_attributes = True
@@ -143,6 +156,12 @@ class Transaction(TransactionBase):
     created_at: datetime
     updated_at: datetime
 
+    @field_serializer('id', 'user_id')
+    def serialize_uuid(self, value):
+        if isinstance(value, UUID):
+            return str(value)
+        return value
+
     class Config:
         from_attributes = True
         populate_by_name = True
@@ -161,6 +180,12 @@ class CategorySummary(BaseModel):
     total: float
     percentage: float
 
+    @field_serializer('category_id')
+    def serialize_uuid(self, value):
+        if isinstance(value, UUID):
+            return str(value)
+        return value
+
     class Config:
         populate_by_name = True
 
@@ -174,6 +199,12 @@ class BalanceSummaryResponse(BaseModel):
     total_expense: float = Field(..., alias="totalExpense")
     income_by_category: Optional[List[CategorySummary]] = Field(None, alias="incomeByCategory")
     expense_by_category: Optional[List[CategorySummary]] = Field(None, alias="expenseByCategory")
+
+    @field_serializer('user_id')
+    def serialize_uuid(self, value):
+        if isinstance(value, UUID):
+            return str(value)
+        return value
 
     class Config:
         populate_by_name = True
