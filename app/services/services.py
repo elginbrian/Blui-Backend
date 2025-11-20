@@ -240,10 +240,9 @@ class TransactionService:
             user_id=user_id,
             category_id=transaction_data.category_id,
             type=transaction_data.type,
-            name=transaction_data.name,
+            description=transaction_data.description,
             amount=transaction_data.amount,
-            date=transaction_data.date,
-            note=transaction_data.note
+            date=transaction_data.date
         )
 
         db.add(transaction)

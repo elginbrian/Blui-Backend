@@ -111,11 +111,10 @@ class CategoriesListResponse(BaseModel):
 # Transaction schemas
 class TransactionBase(BaseModel):
     type: str = Field(..., pattern="^(income|expense)$")
-    name: str = Field(..., min_length=1, max_length=100)
+    description: str = Field(..., min_length=1, max_length=100, alias="name")
     category_id: str = Field(..., alias="categoryId")
     amount: float = Field(..., gt=0)
     date: str = Field(..., pattern=r"^\d{4}-\d{2}-\d{2}$")  # YYYY-MM-DD format
-    note: Optional[str] = None
 
     class Config:
         populate_by_name = True
@@ -126,11 +125,10 @@ class TransactionCreate(TransactionBase):
 
 
 class TransactionUpdate(BaseModel):
-    name: Optional[str] = Field(None, min_length=1, max_length=100)
+    description: Optional[str] = Field(None, min_length=1, max_length=100, alias="name")
     category_id: Optional[str] = Field(None, alias="categoryId")
     amount: Optional[float] = Field(None, gt=0)
     date: Optional[str] = Field(None, pattern=r"^\d{4}-\d{2}-\d{2}$")
-    note: Optional[str] = None
 
     class Config:
         populate_by_name = True
